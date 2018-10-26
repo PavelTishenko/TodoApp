@@ -5,7 +5,7 @@ import './item-status-filter.css';
 export default class ItemStatusFilter extends Component{
   
   render(){
-    // this.props;
+    
     return (
       <div className="btn-group">
         <button type="button"

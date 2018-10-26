@@ -15,7 +15,7 @@ export default class ItemAddForm extends Component {
   };
 
   onSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // abort reload page, it means do not doing default sings
     const { label } = this.state;
     this.setState({ label: '' });
     const cb = this.props.onItemAdded || (() => {});

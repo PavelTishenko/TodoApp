@@ -14,11 +14,15 @@ export default class App extends Component {
 
   state ={
     todoDate:[
-      { label: 'Drink Coffee', important: false, id: 1 },
-      { label: 'Make Awesome App', important: true, id: 2 },
-      { label: 'Have a lunch', important: false, id: 3 }
+      this.createTodoItem('Drink Cofee'),
+      this.createTodoItem('Make Awesome App'),
+      this.createTodoItem('Have a lunch')
     ]
   };
+
+  createTodoItem(label){
+    return {label, important: false, done: false,  id: this.maxId++}
+  }
 // delete item from list
   deleteItem = (id) => {
     this.setState(({todoDate}) => {
@@ -36,7 +40,7 @@ export default class App extends Component {
   // add new item to list
   addItem = (text) => {
     // generate id 
-    const newItem = {label: text, important: false, id: this.maxId++}
+    const newItem = this.createTodoItem(text)
     //add element in array 
     this.setState(({todoDate}) => {
       const newArr = [...todoDate, newItem];
@@ -46,18 +50,54 @@ export default class App extends Component {
     })
   };
 
+  toggleProperty(arr, id, propName){
+    const idx = this.state.todoDate.findIndex((el) => el.id === id);
+    // update obj
+    const oldItem = this.state.todoDate[idx];
+    const newItem = {...oldItem, [propName]: !oldItem[propName]};
+
+    return  [...arr.slice(0, idx), newItem, ... arr.slice(idx + 1)];
+  
+  }
+
+  onToggleImportant = (id) => {
+    this.setState(({todoDate}) => {
+      return {todoDate: this.toggleProperty(todoDate, id, 'important')}
+      })
+
+  };
+
+  onToggleDone = (id) => {
+    this.setState(({todoDate}) => {
+     
+    return {todoDate: this.toggleProperty(todoDate, id, 'done')}
+    })
+  };
+
+  searchChage(search){
+    this.setState({
+      search
+    });
+  }
+
   render(){
+    const {todoDate} = this.state;
+    const doneCount = this.state.todoDate.filter((el) => el.done).length;
+    const todoCount = this.state.todoDate.length - doneCount;
     return (
       <div className="todo-app">
-        <AppHeader toDo={1} done={3} />
+        <AppHeader toDo={todoCount} done={doneCount} />
         <div className="top-panel d-flex">
-          <SearchPanel />
+          <SearchPanel searchChange = {this.searchChage}/>
           <ItemStatusFilter />
         </div>
   
         <TodoList 
-        todos={this.state.todoDate} 
-        onDeleted={this.deleteItem}/>
+         onToggleDone = {this.onToggleDone}
+         onToggleImportant = {this.onToggleImportant}
+         todos={this.state.todoDate} 
+         onDeleted={this.deleteItem}
+         />
         <ItemAddForm onItemAdded = {this.addItem} />
       </div>
     );
